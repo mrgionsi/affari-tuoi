@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Affari Tuoi - Premi</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f7f7f7;
+            padding: 40px;
+        }
+
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .logo-affari-tuoi {
+            width: 90px;
+            height: auto;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 2.8em;
+            letter-spacing: 2px;
+            color: #1565c0;
+            margin: 0;
+            font-weight: bold;
+            text-shadow: 1px 2px 8px #b3c6e6;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+        }
+
+        .colonna {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .premio {
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+            padding: 28px 0;
+            text-align: center;
+            font-size: 2em;
+            font-weight: normal;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s, opacity 0.3s;
+            user-select: none;
+            min-width: 520px;
+            max-width: 520px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            word-break: break-word;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        .premio.blu {
+            color: #fff;
+            background: #1976d2;
+            border-left: 12px solid #1565c0;
+            justify-content: flex-start;
+            text-align: left;
+            padding-left: 32px;
+        }
+
+        .premio.rosso {
+            color: #fff;
+            background: #c62828;
+            border-right: 12px solid #b71c1c;
+            justify-content: flex-end;
+            text-align: right;
+            padding-right: 32px;
+        }
+
+        .premio:hover {
+            background: #1565c0;
+            transform: scale(1.04);
+        }
+
+        .premio.rosso:hover {
+            background: #b71c1c;
+        }
+
+        .premio.rimosso {
+            display: none;
+        }
+
+        /* Prima lettera grande */
+        .premio span.prima-lettera {
+            font-size: 1.5em;
+            text-transform: uppercase;
+            vertical-align: middle;
+            line-height: 1;
+            margin-right: 2px;
+            font-weight: normal;
+        }
+
+        /* Overlay per animazione */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .premio-animato {
+            position: relative;
+            z-index: 1001;
+            min-width: 420px;
+            max-width: 520px;
+            padding: 38px 0;
+            font-size: 3.5em;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            animation: pop-bounce 0.8s cubic-bezier(.68, -0.55, .27, 1.55);
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .premio-animato.blu {
+            background: linear-gradient(135deg, #1976d2 60%, #63a4ff 100%);
+        }
+
+        .premio-animato.rosso {
+            background: linear-gradient(135deg, #c62828 60%, #ff8a80 100%);
+        }
+
+        @keyframes pop-bounce {
+            0% {
+                transform: scale(0.7) translateY(60px);
+                opacity: 0;
+            }
+
+            60% {
+                transform: scale(1.15) translateY(-10px);
+                opacity: 1;
+            }
+
+            80% {
+                transform: scale(0.95) translateY(0);
+            }
+
+            100% {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Sgretolamento */
+        .frammenti {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .frammento {
+            position: absolute;
+            width: 33.33%;
+            height: 50%;
+            opacity: 1;
+            background: inherit;
+            border-radius: 6px;
+            transition: transform 0.9s cubic-bezier(.68, -0.55, .27, 1.55), opacity 0.9s;
+            z-index: 2;
+        }
+
+        .frammento.f1 {
+            left: 0;
+            top: 0;
+            transition-delay: 0.05s;
+        }
+
+        .frammento.f2 {
+            left: 33.33%;
+            top: 0;
+            transition-delay: 0.12s;
+        }
+
+        .frammento.f3 {
+            left: 66.66%;
+            top: 0;
+            transition-delay: 0.19s;
+        }
+
+        .frammento.f4 {
+            left: 0;
+            top: 50%;
+            transition-delay: 0.26s;
+        }
+
+        .frammento.f5 {
+            left: 33.33%;
+            top: 50%;
+            transition-delay: 0.33s;
+        }
+
+        .frammento.f6 {
+            left: 66.66%;
+            top: 50%;
+            transition-delay: 0.40s;
+        }
+
+        .sgretola .frammento.f1 {
+            transform: translate(-120px, -120px) rotate(-40deg) scale(0.6);
+            opacity: 0;
+        }
+
+        .sgretola .frammento.f2 {
+            transform: translate(0, -140px) rotate(25deg) scale(0.6);
+            opacity: 0;
+        }
+
+        .sgretola .frammento.f3 {
+            transform: translate(120px, -120px) rotate(40deg) scale(0.6);
+            opacity: 0;
+        }
+
+        .sgretola .frammento.f4 {
+            transform: translate(-100px, 120px) rotate(-30deg) scale(0.6);
+            opacity: 0;
+        }
+
+        .sgretola .frammento.f5 {
+            transform: translate(0, 140px) rotate(20deg) scale(0.6);
+            opacity: 0;
+        }
+
+        .sgretola .frammento.f6 {
+            transform: translate(100px, 120px) rotate(35deg) scale(0.6);
+            opacity: 0;
+        }
+
+        .premio-animato .premio-testo {
+            position: relative;
+            z-index: 3;
+            transition: opacity 0.5s;
+        }
+
+        .sgretola .premio-testo {
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* Schermata iniziale */
+        .start-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #fff;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s;
+            padding: 0;
+        }
+
+        .start-overlay img {
+            width: 100vw;
+            height: 100vh;
+            object-fit: contain;
+            max-width: 100vw;
+            max-height: 100vh;
+            background: #fff;
+            cursor: pointer;
+            user-select: none;
+            display: block;
+            margin: auto;
+        }
+
+        .start-overlay.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Responsive layout */
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+                gap: 32px;
+            }
+
+            .colonna {
+                width: 100%;
+                max-width: 98vw;
+            }
+
+            .premio {
+                min-width: 90vw;
+                max-width: 98vw;
+                font-size: 1.2em;
+                padding: 20px 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .header h2 {
+                font-size: 2em;
+            }
+
+            .logo-affari-tuoi {
+                font-size: 40px !important;
+            }
+
+            .premio {
+                min-width: 98vw;
+                max-width: 98vw;
+                font-size: 1em;
+                padding: 14px 0;
+            }
+
+            .premio.blu {
+                padding-left: 16px;
+                border-left-width: 7px;
+            }
+
+            .premio.rosso {
+                padding-right: 16px;
+                border-right-width: 7px;
+            }
+
+            .premio span.prima-lettera {
+                font-size: 1.2em;
+            }
+
+            .premio-animato {
+                min-width: 90vw;
+                max-width: 98vw;
+                font-size: 1.5em;
+                padding: 18px 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="start-overlay" id="startOverlay">
+        <img src="src/antonio_francesco.png" alt="Affari Tuoi" />
+    </div>
+    <div class="header">
+        <div class="logo-affari-tuoi" style="font-size:70px; margin-bottom:20px;">🎁</div>
+        <h2>Affari Tuoi - Federica Edition</h2>
+    </div>
+    <div class="container">
+        <div class="colonna" id="blu"></div>
+        <div class="colonna" id="rossi"></div>
+    </div>
+    <div id="overlay" class="overlay" style="display:none;"></div>
+    <script>
+        // Premi aggiornati
+        const premiBlu = [
+            "0 euro",
+            "1 euro",
+            "2 euro",
+            "Matita per occhi",
+            "Un bacio",
+            "Un gelato",
+            "Cornice con foto",
+            "Serata al cinema",
+            "Pigiama",
+            "Aperitivo al mare"
+        ];
+        const premiRossi = [
+            "Piega + colore parrucchiere",
+            "Cena in pizzeria scelta da te",
+            "Gift card campania 50€",
+            "Pranzo con vista mare",
+            "Stampante pasta di zucchero",
+            "2 biglietti per concerto",
+            "Weekend alle terme",
+            "Viaggio in italia",
+            "Viaggio in Europa",
+            "Viaggio intercontinentale"
+        ];
+
+        // Funzione per rendere la prima lettera grande
+        function formatPremio(text) {
+            if (!text) return '';
+            return `<span class="prima-lettera">${text[0]}</span>${text.slice(1)}`;
+        }
+
+        premiBlu.forEach(val => {
+            $('#blu').append(`<div class="premio blu">${formatPremio(val)}</div>`);
+        });
+        premiRossi.forEach(val => {
+            $('#rossi').append(`<div class="premio rosso">${formatPremio(val)}</div>`);
+        });
+
+        $('.container').on('click', '.premio', function () {
+            const $premio = $(this);
+            const premioText = $premio.text();
+            const isBlu = $premio.hasClass('blu');
+            const isRosso = $premio.hasClass('rosso');
+
+            // Overlay e box centrale
+            const $overlay = $('#overlay');
+            $overlay.html(`
+                <div class="premio-animato ${isBlu ? 'blu' : ''} ${isRosso ? 'rosso' : ''}">
+                    <span class="premio-testo">${premioText}</span>
+                    <div class="frammenti">
+                        <div class="frammento f1"></div>
+                        <div class="frammento f2"></div>
+                        <div class="frammento f3"></div>
+                        <div class="frammento f4"></div>
+                        <div class="frammento f5"></div>
+                        <div class="frammento f6"></div>
+                    </div>
+                </div>
+            `).fadeIn(120);
+
+            // Dopo il delay, parte l'animazione di sgretolamento
+            setTimeout(() => {
+                $overlay.find('.premio-animato').addClass('sgretola');
+                setTimeout(() => {
+                    $overlay.fadeOut(220, function () {
+                        $overlay.empty();
+                    });
+                    $premio.addClass('rimosso');
+                }, 1100); // tempo per completare sgretolamento
+            }, 1700); // delay più lungo prima dello sgretolamento
+        });
+
+        // Gestione schermata iniziale
+        $('#startOverlay').on('click', function () {
+            $(this).addClass('hide');
+            setTimeout(() => {
+                $(this).remove();
+            }, 500);
+        });
+    </script>
+</body>
+
+</html>
