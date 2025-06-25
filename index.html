@@ -463,6 +463,12 @@
                 $(this).remove();
             }, 500);
         });
+
+        // Previeni il reload accidentale della pagina
+        window.addEventListener('beforeunload', function (e) {
+            e.preventDefault();
+            e.returnValue = '';
+        });
     </script>
 </body>
 
